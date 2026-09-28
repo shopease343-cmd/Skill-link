@@ -13,7 +13,7 @@
 <div id="app"></div><div id="modal" class="modal"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle">Action</h3><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div id="toast" class="toast"></div>
 <script>
 'use strict';
-const API_BASE = window.SKILL_LINK_API_BASE || '/api';
+  const API_BASE = 'https://skill-link-5.onrender.com/api';
 const state={page:'home',role:null,user:null,token:localStorage.getItem('skilllink_token')||'',sidebar:false,filters:{}};
 const packages=[['Aarambh','Digital Foundation','₹499','🌱','Computer Basics, Internet & Online Tools, Basic Design, Freelancing Introduction'],['Udaan','Creative + Content Skills','₹999','🚀','Video Editing, Graphic Design, Content Creation, Social Media Basics'],['Pragati','Marketing + Client Skills','₹1,999','📈','Digital Marketing, Client Handling, Meta Ads Basics, Personal Branding'],['Brahmastra','Advanced Digital Skills','₹3,999','⚔️','Web Development, Advanced Marketing, Automation Tools, E-commerce & Dropshipping'],['Shikhar','Leadership + Business','₹6,999','🏆','Business Strategy, Team Building, Personal Management, Leadership Mastery']];
 const publicPages=['home','courses','package','projects','masterclass','about','contact','login','register'];
