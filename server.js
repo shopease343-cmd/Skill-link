@@ -23,6 +23,113 @@ if (!process.env.DATABASE_URL || !process.env.JWT_SECRET) {
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" || process.env.DATABASE_URL.includes("sslmode=require")
+    ssl: process.env.NODE_ENV === "production" || process.env.DATABASE_URL.includes("sslmode=require")
+    ? { rejectUnauthorized: false } : false
+});
+
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(cookieParser());
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const asyncRoute = fn => (req,res,next)=>Promise.resolve(fn(req,res,next)).catch(next);
+const q = (text, params=[]) => pool.query(text, params);
+
+async function audit(actorId, action, targetType=null, targetId=null, details={}) {
+  await q(`INSERT INTO audit_logs(actor_id,action,target_type,target_id,details) VALUES($1,$2,$3,$4,$5)`,
+    [actorId,action,targetType,targetId,JSON.stringify(details)]);
+}
+
+function issueToken(user) {
+  return jwt.sign(
+    { id:user.id, role:user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: `${SESSION_DAYS}d` }
+  );
+}
+
+function setSession(res, token) {
+  res.cookie(COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: SESSION_DAYS * 24 * 60 * 60 * 1000,
+    path: "/"
+  });
+}
+
+function safeUser(row) {
+  if (!row) return null;
+  const {password_hash, ...u} = row;
+  return u;
+}
+
+const auth = asyncRoute(async(req,res,next)=>{
+  const token=req.cookies[COOKIE];
+  if(!token) return res.status(401).json({message:"Authentication required"});
+  try {
+    const payload=jwt.verify(token,process.env.JWT_SECRET);
+    const r=await q(`SELECT id,name,username,email,mobile,role,status,first_login,referral_code,referred_by FROM users WHERE id=$1`,[payload.id]);
+    if(!r.rows[0] || r.rows[0].status!=="ACTIVE")
+      return res.status(401).json({message:"Session is no longer active"});
+    req.user=r.rows[0];
+    next();
+  } catch {
+    return res.status(401).json({message:"Invalid or expired session"});
+  }
+});
+
+const allow = (...roles) => (req,res,next) => roles.includes(req.user.role)
+  ? next()
+  : res.status(403).json({message:"Access denied"});
+
+app.get("/api/health", asyncRoute(async(req,res)=>{
+  await q("SELECT 1");
+  res.json({ok:true,service:"SkillLink API"});
+}));
+
+app.post("/api/auth/register", asyncRoute(async(req,res)=>{
+  const {name,mobile,email,username,password,role="PARTNER",referralCode}=req.body;
+
+  if(!name||!username||!password)
+    return res.status(400).json({message:"Name, username and password are required"});
+
+  if(!["PARTNER","CLIENT"].includes(role))
+    return res.status(400).json({message:"Public registration cannot create this role"});
+
+  const exists=await q(
+    `SELECT id FROM users WHERE username=$1 OR ($2::text IS NOT NULL AND email=$2)`,
+    [username,email||null]
+  );
+
+  if(exists.rows.length)
+    return res.status(409).json({message:"Username or email already exists"});
+
+  let referredBy=null;
+
+  if(referralCode){
+    const rr=await q(
+      `SELECT id FROM users WHERE referral_code=$1 AND role='PARTNER' AND status='ACTIVE'`,
+      [referralCode]
+    );
+
+    if(!rr.rows[0])
+      return res.status(400).json({message:"Invalid referral ID"});
+
+    referredBy=rr.rows[0].id;
+  }
+
+  const hash=await bcrypt.hash(password,12);
+  const refCode=`SL-${crypto.randomBytes(5).toString("hex").toUpperCase()}`;
+  
     ? { rejectUnauthorized: false } : false
 });
 
@@ -135,18 +242,6 @@ app.post("/api/auth/change-password",auth,asyncRoute(async(req,res)=>{
   res.json({message:"Password changed"});
 }));
 
-app.post("/api/auth/forgot-password",loginLimiter,asyncRoute(async(req,res)=>{
-  const {username}=req.body;
-  const r=await q(`SELECT id FROM users WHERE username=$1 OR email=$1`,[username]);
-  if(r.rows[0]){
-    const raw=crypto.randomBytes(32).toString("hex");
-    const hash=crypto.createHash("sha256").update(raw).digest("hex");
-    await q(`UPDATE password_reset_tokens SET used_at=now() WHERE user_id=$1 AND used_at IS NULL`,[r.rows[0].id]);
-    await q(`INSERT INTO password_reset_tokens(user_id,token_hash,expires_at) VALUES($1,$2,now()+interval '30 minutes')`,[r.rows[0].id,hash]);
-    console.log(`PASSWORD_RESET_TOKEN_FOR_DEVELOPMENT: ${raw}`);
-  }
-  res.json({message:"If the account exists, reset instructions have been generated"});
-}));
 
 app.post("/api/auth/reset-password",asyncRoute(async(req,res)=>{
   const {token,newPassword}=req.body;
