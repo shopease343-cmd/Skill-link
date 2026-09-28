@@ -28,7 +28,7 @@ const pool = new Pool({
 
 app.set("trust proxy", 1);
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 
@@ -51,12 +51,12 @@ function issueToken(user) {
   return jwt.sign({ id:user.id, role:user.role }, process.env.JWT_SECRET, { expiresIn: `${SESSION_DAYS}d` });
 }
 function setSession(res, token) {
-  res.cookie(COOKIE, token, {
-    httpOnly:true,
-    secure:process.env.NODE_ENV === "production",
-    sameSite:"lax",
-    maxAge:SESSION_DAYS*24*60*60*1000,
-    path:"/"
+  res.clearCookie(COOKIE, {
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/"
+});
   });
 }
 function safeUser(row) {
