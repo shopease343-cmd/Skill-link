@@ -17,9 +17,9 @@ npm install
 
 ## Configure
 Copy `.env.example` to `.env` and set:
-- DATABASE_URL
-- JWT_SECRET
-- FRONTEND_URL
+- postgresql://postgres:masterpay@4652@db.qphofcllcuvwtliobgqz.supabase.co:5432/postgres
+- SkL!2026_9xK7mP2vQ8rL5tN4zW6aC1sD
+- https://skill-link-888.vercel.app
 - CEO_PASSWORD
 
 Never commit `.env`.
