@@ -41,27 +41,45 @@ app.set("trust proxy", 1);
 
 app.use(helmet());
 
-const allowedOrigins = (process.env.FRONTEND_URL || "")
-  .split(",")
-  .map((v) => v.trim())
-  .filter(Boolean);
+const allowedOrigins = [
+  "https://skill-link-47h1.vercel.app",
+  "https://skill-link-888.vercel.app",
+  "https://skill-link-frontend-jefz.vercel.app",
+  "https://skill-link-frontend-mu.vercel.app"
+];
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0) {
+      if (!origin) {
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      const cleanOrigin = origin.replace(/\/$/, "");
+
+      if (allowedOrigins.includes(cleanOrigin)) {
         return callback(null, true);
       }
 
+      console.error("CORS BLOCKED ORIGIN:", origin);
       return callback(new Error("CORS origin not allowed"));
     },
+
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization"
+    ]
   })
 );
 
