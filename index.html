@@ -14,6 +14,33 @@
 'use strict';
   const API_BASE ='https://skill-link-11.onrender.com/api';
 const state={page:'home',role:null,user:null,token:localStorage.getItem('skilllink_token')||'',sidebar:false,filters:{}};
+  async function api(path,opts={}){
+  const h={
+    'Content-Type':'application/json',
+    ...(opts.headers||{})
+  };
+
+  if(state.token){
+    h.Authorization='Bearer '+state.token;
+  }
+
+  const r=await fetch(API_BASE+path,{
+    ...opts,
+    headers:h,
+    credentials:'include'
+  });
+
+  let d={};
+  try{
+    d=await r.json();
+  }catch{}
+
+  if(!r.ok){
+    throw new Error(d.message||d.error||'Request failed');
+  }
+
+  return d;
+  }
 const packages=[['Aarambh','Digital Foundation','₹499','🌱','Computer Basics, Internet & Online Tools, Basic Design, Freelancing Introduction'],['Udaan','Creative + Content Skills','₹999','🚀','Video Editing, Graphic Design, Content Creation, Social Media Basics'],['Pragati','Marketing + Client Skills','₹1,999','📈','Digital Marketing, Client Handling, Meta Ads Basics, Personal Branding'],['Brahmastra','Advanced Digital Skills','₹3,999','⚔️','Web Development, Advanced Marketing, Automation Tools, E-commerce & Dropshipping'],['Shikhar','Leadership + Business','₹6,999','🏆','Business Strategy, Team Building, Personal Management, Leadership Mastery']];
 const publicPages=['home','courses','package','projects','masterclass','about','contact','login','register'];
 const navLabel={home:'Home',courses:'Courses',projects:'Projects',masterclass:'Masterclass',about:'About'};
