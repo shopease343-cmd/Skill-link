@@ -61,7 +61,85 @@ function masterclass(){const ms=[['Digital Marketing Masterclass','Learn real cl
 function about(){return `${header()}<div class="container"><div class="about"><div><h1>About SkillLink</h1><p class="eyebrow">Learn • Build • Earn</p><p>SkillLink is a complete platform for digital learning, practical projects, skills and opportunities. Our mission is to help students, freelancers and professionals grow their skills and achieve financial freedom.</p><div class="grid2"><div><b>Our Mission</b><p class="muted">Empower with skills and opportunities.</p></div><div><b>Our Vision</b><p class="muted">A brighter future for every learner.</p></div><div><b>Our Values</b><p class="muted">Practical learning and real growth.</p></div><div><b>Community</b><p class="muted">Guidance and support.</p></div></div></div><div class="photo"></div></div><div class="grid4" style="margin-top:25px"><div class="card"><h2>1000+</h2><p class="muted">Partners</p></div><div class="card"><h2>500+</h2><p class="muted">Projects</p></div><div class="card"><h2>32+</h2><p class="muted">Courses</p></div><div class="card"><h2>95%</h2><p class="muted">Success Rate</p></div></div></div>${footer()}`}
 function contact(){return `${header()}<div class="container"><div class="contact"><div><h1>Get In Touch</h1><p class="muted">We're here to help you.</p><div class="card"><p>✉️ support@skilllink.in</p><p>📞 +91 98765 43210</p><p>📍 Jaipur, Rajasthan, India</p><p>◷ 9:00 AM – 7:00 PM (Mon – Sat)</p></div></div><div class="card"><form class="form" onsubmit="sendContact(event)"><input name="name" placeholder="Your Name" required><input name="email" type="email" placeholder="Your Email" required><input name="subject" placeholder="Subject" required><textarea name="message" placeholder="Your Message" required></textarea><button class="btn btn-primary">Send Message</button></form></div></div></div>${footer()}`}
 function login(){return `<div class="login-wrap"><div class="login-card"><div class="brand" style="justify-content:center"><div class="brandmark">S</div><div class="brandtext">SKILLLINK<small>LEARN | GROW | EARN</small></div></div><h2 style="text-align:center">Welcome Back</h2><p class="muted" style="text-align:center">Login to your account</p><div class="role-note">One login only. Backend automatically identifies CEO, Admin, Partner or Client.</div><form class="form" style="margin-top:15px" onsubmit="loginSubmit(event)"><input name="identifier" placeholder="Username / User ID" required><input name="password" type="password" placeholder="Password" required><input name="referral" placeholder="Referral ID (not compulsory)"><button class="btn btn-primary">Login</button><a style="text-align:right;font-size:12px;color:#075ed8;cursor:pointer" onclick="forgotPassword()">Forgot Password?</a></form><p style="text-align:center;font-size:12px">Don't have an account? <a onclick="go('register')" style="color:#075ed8;cursor:pointer">Register Now</a></p></div></div>`}
-function register(){return `${header()}<div class="login-wrap"><div class="login-card"><h2>Create Account</h2><p class="muted">Join SkillLink and start your journey.</p><form class="form" onsubmit="registerSubmit(event)"><input name="name" placeholder="Full Name" required><input name="email" type="email" placeholder="Email" required><input name="mobile" placeholder="Phone Number" required><input name="password" type="password" placeholder="Create Password" required><input name="confirm" type="password" placeholder="Confirm Password" required><input name="referral" placeholder="Referral ID (Optional)"><label style="font-size:12px"><input type="checkbox" required> I agree to the Terms & Conditions</label><button class="btn btn-primary">Register Now</button></form><p style="text-align:center;font-size:12px">Already have an account? <a onclick="go('login')" style="color:#075ed8;cursor:pointer">Login</a></p></div></div>`}
+  function register(){
+  return `${header()}
+  <div class="login-wrap">
+    <div class="login-card">
+
+      <h2>Create Account</h2>
+      <p class="muted">Join SkillLink and start your journey.</p>
+
+      <form class="form" onsubmit="registerSubmit(event)">
+
+        <input
+          name="name"
+          placeholder="Full Name"
+          required
+        >
+
+        <input
+          name="username"
+          placeholder="Username / User ID"
+          required
+        >
+
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+        >
+
+        <input
+          name="mobile"
+          placeholder="Phone Number"
+          required
+        >
+
+        <input
+          name="password"
+          type="password"
+          placeholder="Create Password (minimum 8 characters)"
+          minlength="8"
+          required
+        >
+
+        <input
+          name="confirm"
+          type="password"
+          placeholder="Confirm Password"
+          minlength="8"
+          required
+        >
+
+        <input
+          name="referral"
+          placeholder="Referral ID (Optional)"
+        >
+
+        <label style="font-size:12px">
+          <input type="checkbox" required>
+          I agree to the Terms & Conditions
+        </label>
+
+        <button class="btn btn-primary" type="submit">
+          Register Now
+        </button>
+
+      </form>
+
+      <p style="text-align:center;font-size:12px">
+        Already have an account?
+        <a
+          onclick="go('login')"
+          style="color:#075ed8;cursor:pointer"
+        >
+          Login
+        </a>
+      </p>
+
+    </div>
+  </div>`;
 function shell(){const role=state.role.toLowerCase();const menus={ceo:['CEO Dashboard','Analytics','User Management','Create Admin','Create Partner','Create Client','All Users','Packages','Courses','Masterclass','Projects','Leads','Payments','Earnings & Withdrawals','Referrals','Levels & Rewards','Certificates','Company QR','Notifications','Reports','Website Settings','System Settings','Profile & Security'],admin:['Dashboard','Partners','Clients','Projects','Leads','Courses','Masterclass','Payments','Withdrawals','Referrals','Levels & Rewards','Notifications','Reports','Audit Logs','Company QR','Profile & Security'],partner:['Dashboard','My Learning','My Projects','Earnings & Wallet','Referrals','Lead Pool','My Leads','Levels & Rewards','Leaderboard','Masterclass','Withdrawals','Company QR','Notifications','Profile & Security'],client:['Dashboard','Post Project','My Projects','Project Status','Assigned Partner','Communication','My Payments','Project Submissions','Saved Partners','Reviews & Ratings','Company QR','Notifications','Profile & Settings','Help & Support']}[role];return `<div class="app"><aside class="sidebar ${state.sidebar?'open':''}"><div class="side-logo"><div class="brand"><div class="brandmark">S</div><div class="brandtext">SKILLLINK<small>LEARN | GROW | EARN</small></div></div></div>${menus.map((m,i)=>`<div class="side-item ${i===0?'active':''}" onclick="dashPage('${m}')">${sideIcon(i)}<span>${m}</span></div>`).join('')}<div class="card" style="margin:18px 3px;background:#0d3156;color:#fff;border-color:#24527a"><b>Company Payment QR</b><div style="height:120px;background:#fff;margin:10px 0;border-radius:8px;display:grid;place-items:center;color:#111;font-size:50px">▦</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="companyQR()">View QR</button></div></aside><main class="main"><div class="dashbar"><div class="brand"><div class="brandmark">S</div><div class="brandtext">SKILLLINK<small>LEARN | GROW | EARN</small></div></div><input class="search" placeholder="Search users, projects, payments, courses..."><div>🔔</div><div>💬</div><div class="avatar">${esc(state.user?.name?.[0]||"U")}</div><div style="font-size:12px">${esc(state.user?.name||"User")}<br><span style="opacity:.7">${esc(state.role||"")}</span></div></div><div class="dash-top"><div><h1>${role==='ceo'?'CEO Dashboard':role==='admin'?'Admin Dashboard':role==='partner'?`Welcome back, ${esc(state.user?.name||'Partner')}! 👋`:`Welcome back, ${esc(state.user?.name||'Client')}!`}</h1><p>${role==='partner'?'Keep learning, complete projects and grow to the next level.':'Here is your SkillLink overview.'}</p></div><div style="display:flex;gap:8px"><button class="btn btn-soft" onclick="toggleSidebar()">☰</button><button class="btn btn-primary" onclick="quickAction()">+ ${role==='client'?'Post New Project':role==='ceo'?'Create Partner':'Quick Action'}</button><button class="btn btn-danger" onclick="logout()">Logout</button></div></div><div class="dash-body" id="dashContent">${dashboardContent(role)}</div></main></div>`}
 function sideIcon(i){return ['⌂','▣','♟','＋','◉','◈','▤','▦','▣','◉','◈','◌','↗','★','♜','●','⚙','◍','✓','☰','⚙','◉'][i%22]}
 function kpi(label,value,cls){return `<div class="kpi ${cls}"><span>${label}</span><b>${value}</b><span>↑ Updated</span></div>`}
