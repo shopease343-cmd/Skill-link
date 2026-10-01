@@ -102,6 +102,12 @@ a{text-decoration:none;color:inherit;cursor:pointer}
 <div id="modal" class="modal"><div class="modalBox"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div>
 
 <script>
+  const API_BASE_URL = "https://skill-link-12.onrender.com/api";
+
+api("/auth/login")
+api("/auth/register")
+api("/auth/me")
+api("/auth/logout")
 const packages=[
 {name:"Aarambh",price:499,sub:"Digital Foundation",skills:["Digital & Computer Foundation","Internet & Online Tools","Basic Communication","Google Workspace","Data Entry Basics"]},
 {name:"Udaan",price:999,sub:"Creative + Content Skills",skills:["Canva Designing","Graphic Design Basics","Video Editing Basics","Content Creation","Social Media Basics"]},
